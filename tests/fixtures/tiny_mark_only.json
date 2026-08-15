@@ -1,0 +1,6 @@
+{
+  "name": "tiny_mark_only",
+  "description": "Tiny Mark seed fixture.",
+  "seed_verse_ids": ["MRK_001_001", "MRK_001_002"],
+  "eval_verse_ids": ["MAT_001_001"]
+}

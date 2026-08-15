@@ -1,0 +1,29 @@
+dataset_path: "data/bible_dataset/processed/verses.csv"
+splits_dir: "data/bible_dataset/splits"
+
+source_language: "eng"
+source_version_preference:
+  - "web"
+  - "asv"
+  - "kjv"
+
+target_versions: []
+
+seed_conditions:
+  - "seed_50_random_mark"
+  - "seed_100_random_mark"
+  - "seed_250_random_mark"
+  - "mark_only"
+  - "gospels_only"
+
+retrieval:
+  model_name: "sentence-transformers/all-MiniLM-L6-v2"
+  top_k: 50
+  examples_k: 8
+
+evaluation:
+  metrics:
+    - "chrf"
+    - "bleu"
+    - "glossary_pass_rate"
+    - "length_ratio"

@@ -1,0 +1,7 @@
+verse_id,book,chapter,verse,language,version,text,source,license,testament,raw_book,raw_path
+MRK_001_001,MRK,1,1,eng,web,The beginning of the Good News of Jesus Christ.,fixture,CC0,NT,Mark,fixture
+MRK_001_002,MRK,1,2,eng,web,As it is written in the prophets.,fixture,CC0,NT,Mark,fixture
+MAT_001_001,MAT,1,1,eng,web,The book of the genealogy of Jesus Christ.,fixture,CC0,NT,Matthew,fixture
+MRK_001_001,MRK,1,1,tst,toy,Toy Mark one Jesus Christ.,fixture,CC0,NT,Mark,fixture
+MRK_001_002,MRK,1,2,tst,toy,Toy Mark two prophets.,fixture,CC0,NT,Mark,fixture
+MAT_001_001,MAT,1,1,tst,toy,Toy Matthew one Jesus Christ.,fixture,CC0,NT,Matthew,fixture

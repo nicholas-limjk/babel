@@ -1,0 +1,18 @@
+source_repo: "https://github.com/midvash/bible-data.git"
+output_dir: "data/bible_dataset"
+nt_only: true
+force_reclone: false
+
+allowed_licenses:
+  - "Public Domain"
+  - "CC0"
+  - "CC BY"
+  - "CC BY-SA"
+  - "unknown"   # keep initially, inspect manually later
+
+exclude_versions:
+  - "ESV"
+  - "NIV"
+  - "NLT"
+  - "CSB"
+  - "NASB"

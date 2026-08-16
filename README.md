@@ -1,79 +1,66 @@
 # Adaptive Bible Translation Memory (ABTM)
 
-A starter research project for testing whether a small translated seed corpus, such as the Gospel of Mark, can bootstrap translation of the rest of the New Testament for extremely low-resource languages.
+Can a small translated seed corpus bootstrap useful translation support for the rest of the New Testament in an extremely low-resource language?
+
+ABTM is a research framework for testing that question. It retrieves semantically related English verses, connects them to known target-language examples, builds terminology and phrase memory, prepares a structured translator prompt, and verifies candidate output.
 
 ## Core idea
 
-The system does **not** train a new MT model first.
-
-Instead, it builds a growing, verse-indexed translation memory:
-
-```text
-English source verse
-  → English semantic retrieval
-  → canonical verse IDs
-  → target-language examples
-  → glossary + phrase memory
-  → translator LLM
-  → verifier
-  → approved verse added back to memory
+```mermaid
+flowchart LR
+    S["English source verse"] --> R["Semantic retrieval"]
+    R --> C["Canonical verse IDs"]
+    C --> E["Target-language examples"]
+    E --> M["Glossary + phrase memory"]
+    M --> L["Translator LLM"]
+    L --> V["Automated verification"]
+    V -->|approved| A["Growing translation memory"]
+    A --> R
 ```
 
-Every approved translation becomes future supervision.
+Every approved translation becomes supervision for later verses. The first milestone deliberately starts with a translated Gospel of Mark and evaluates generated translations against hidden references from the rest of the New Testament.
 
-## What this project contains
+## Concrete example
+
+For an untranslated verse about healing, the system can retrieve known Mark verses containing related actions and vocabulary, attach their canonical target-language translations, add approved terms from the glossary, and ask a translator model for a candidate. Verification then checks missing content, terminology consistency, length anomalies, and reference metrics before the candidate can enter memory.
+
+The current experiment runner uses deterministic nearest-memory placeholder generation instead of calling an LLM. This keeps the retrieval, prompting, memory, verification, and evaluation pipeline reproducible while the model integration remains swappable.
+
+## Repository map
 
 ```text
-abtm/
-  canonical/        canonical book codes and verse IDs
-  retrieval/        English TF-IDF retrieval baseline
-  memory/           translation memory store
-  glossary/         manual glossary support
-  phrase_memory/    recurring phrase memory
-  prompting/        structured prompt builder
-  verification/     lightweight QA checks
-  evaluation/       chrF / unigram BLEU style metrics
-  experiments/      bootstrap experiment runner
-
-specs/
-  01_abtm_research_spec.md
-  02_data_ingestion_spec.md
-  03_experiment_eval_spec.md
-  04_cursor_codex_instructions.md
-  05_optional_ubes_future_work.md
-
-scripts/
-  pull_open_bibles.py
-  create_splits.py
-
-configs/
-  dataset_config.example.yaml
-  experiment_config.example.yaml
-
-requirements.txt
+abtm/          retrieval, memory, prompting, verification, and evaluation
+configs/       example dataset and experiment configuration
+scripts/       open-Bible ingestion and split creation
+specs/         research, ingestion, evaluation, and future-work specifications
+tests/         canonicalization and dataset-split tests
 ```
-
-## First milestone
-
-1. Pull open Bible translations.
-2. Normalize to a verse-level table.
-3. Create artificial limitation splits.
-4. Run Mark-only experiments.
-5. Compare against hidden target-language references.
 
 ## Quick start
 
 ```bash
 python -m venv .venv
+```
+
+Activate the environment:
+
+```bash
+# macOS / Linux
 source .venv/bin/activate
 
-pip install -r requirements.txt
+# Windows PowerShell
+.venv\Scripts\Activate.ps1
+```
 
+Install dependencies and prepare the first experiment:
+
+```bash
+pip install -r requirements.txt
 python scripts/pull_open_bibles.py --out data/bible_dataset --nt-only
 python scripts/create_splits.py --verses data/bible_dataset/processed/verses.csv --out data/bible_dataset/splits
 ```
 
-Run a first-pass bootstrap experiment:
+Run the Mark-only bootstrap:
 
 ```bash
 python -m abtm.experiments.run_bootstrap \
@@ -84,40 +71,14 @@ python -m abtm.experiments.run_bootstrap \
   --out runs/mark_only
 ```
 
-The experiment runner currently uses deterministic nearest-memory placeholder
-generation instead of an LLM call. It still exercises retrieval, prompt
-construction, glossary/phrase hooks, verification, and reference metrics.
+On Windows PowerShell, place the command on one line or replace each trailing `\` with a backtick.
 
-Run tests:
+## Test
 
 ```bash
 python -m unittest discover -s tests
 ```
 
-## Recommended first experiment
+## Responsible data use
 
-For each target language with complete NT coverage:
-
-```text
-Visible:
-  Mark in target language
-
-Hidden:
-  Matthew, Luke, John, Acts, Epistles, Revelation
-
-Task:
-  Translate hidden NT books from English into target language.
-
-Evaluation:
-  Compare generated output against hidden reference translation.
-```
-
-## Important copyright note
-
-Do not redistribute copyrighted translations such as ESV, NIV, NLT, CSB, etc. Use public-domain or openly licensed sources for experiments.
-
-Recommended open English sources:
-- World English Bible
-- American Standard Version
-- King James Version
-- Open English Bible
+Do not redistribute copyrighted translations such as ESV, NIV, NLT, or CSB. Use public-domain or openly licensed sources such as the World English Bible, American Standard Version, King James Version, or Open English Bible.
